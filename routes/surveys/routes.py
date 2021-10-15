@@ -260,7 +260,7 @@ def createEvent(current_user):
                   }
               x=round(res["total"]*0.000044,2)
               n_pay=models.Payment(user=current_user,event=n_event,total=res["total"])
-              print(x);
+              print(x)
               data={
                 "intent": "sale",
                 "payer": {
@@ -315,7 +315,7 @@ def createEvent(current_user):
                 ],
                 "note_to_payer": "Contact us for any questions on your order.",
                 "redirect_urls": {
-                  "return_url": "http://127.0.0.1:5000/checkout",
+                  "return_url": "https://osurvey-server.herokuapp.com/checkout",
                   "cancel_url": "https://example.com/cancel"
                 }
               }

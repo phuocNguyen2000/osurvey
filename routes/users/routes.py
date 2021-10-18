@@ -303,12 +303,12 @@ def addUserToEvent():
         print(i.payment[0].state)
         if  datetime.datetime.now().date()>=i.start.date()  and i.payment[0].state==True:
             # i.status=statusofevs[0]
-            db.session.execute("UPDATE event SET status_id="+str(statusofevs[0].status_for_event_id) +" where event_id="+str(i.event_id)+";")
+            db.session.execute("UPDATE event SET status_id="+str(statusofevs[0].status_for_event_id) +" where event_id="+str(i.event_id)+"")
             db.session.commit()
             users=models.User.query.all()
             print(len(users))
             suitable_users=[u for u in users if checkTags(user=u,event=i)==True and u.user_id!=i.survey.user_id]
-            print(len(suitable_users));
+            print(len(suitable_users))
             if  len(suitable_users)>i.limit:
                 suitable_users=sample(suitable_users,i.limit)
             for u in suitable_users:
@@ -365,41 +365,9 @@ def signup():
                         'api-key': 'WcmSvRQOcQlgftS5INh8DRNxpCPyDZx9'
                 }
                     
-                # response = requests.post(url, files=files, headers=headers)
-                # values= response.json()
-                values={
-    "errorCode": 0,
-    "errorMessage": "",
-    "data": [
-        {
-            "id": "077200004450",
-            "id_prob": "98.13",
-            "name": "LÊ HOÀNG NÊU",
-            "name_prob": "83.51",
-            "dob": "21/06/2000",
-            "dob_prob": "97.91",
-            "sex": "NAM",
-            "sex_prob": "99.34",
-            "nationality": "VIỆT NAM",
-            "nationality_prob": "79.32",
-            "home": "PHÚ ĐỨC, LONG HỒ, VĨNH LONG",
-            "home_prob": "99.38",
-            "address": "ẤP LÒ VÔI PHƯỚC HƯNG  LONG ĐIỀN  BÀ RỊA VŨNG TÀU",
-            "address_prob": "65.52",
-            "doe": "21/06/2025",
-            "doe_prob": "99.23",
-            "overall_score": "78.97",
-            "address_entities": {
-                "province": "BÀ RỊA VŨNG TÀU",
-                "district": "LONG ĐIỀN",
-                "ward": "PHƯỚC HƯNG",
-                "street": "ẤP LÒ VÔI"
-            },
-            "type_new": "cccd_chip_front",
-            "type": "chip_front"
-        }
-    ]
-}
+                response = requests.post(url, files=files, headers=headers)
+                values= response.json()
+               
                 
                 if values["data"]:
                     name=values["data"][0]['name'].split()
@@ -442,26 +410,26 @@ def signup():
                         if (datetime.datetime.now().year -
                          n_year.year)>17  and (datetime.datetime.now().year -
                          n_year.year)<40:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=1);
+                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=1)
                            db.session.add(ntag)
                            db.session.commit()
                         if (datetime.datetime.now().year -
                          n_year.year)>=40  and (datetime.datetime.now().year -
                          n_year.year)<60:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=2);
+                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=2)
                            db.session.add(ntag)
                            db.session.commit()
                         if (datetime.datetime.now().year -
                          n_year.year)>=60:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=3);
+                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=3)
                            db.session.add(ntag)
                            db.session.commit()
                         if n_user.sex=="Nam":
-                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=4);
+                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=4)
                             db.session.add(ntag)
                             db.session.commit()
                         if n_user.sex=="Nữ":
-                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=5);
+                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=5)
                             db.session.add(ntag)
                             db.session.commit()
                         fcm_manager.sendPush(title="hi",msg="okfefwer",re_token= tokens)

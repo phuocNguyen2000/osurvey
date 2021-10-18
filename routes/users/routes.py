@@ -127,6 +127,7 @@ def ownEvent(current_user):
                     "id":e.event_id,
                     "start":e.start.date(),
                     "end":e.end.date(),
+                    "status":e.status_id,
                     "payment":
                     [
                         {
@@ -318,7 +319,6 @@ def addUserToEvent():
                 db.session.commit()
 
 def checkTags(user,event):
-    # users=models.User.query.filter_by(models.User.user_id != event.survey.user_id).all()
     check=False
     for utag in user.tags:
         if utag in event.tags:

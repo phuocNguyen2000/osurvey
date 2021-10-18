@@ -96,7 +96,7 @@ def doSurvey(current_user):
         if current_user:
             event=request.get_json()["event"]
             if event:    
-                u_e=models.User.query.filter_by(user_id=current_user,event_id=event["id"]).first()
+                u_e=models.UserEvent.query.filter_by(user_id=current_user.user_id,event_id=event["id"]).first()
                 if u_e:
                     for q in event["survey"]["questions"]:
                         for a in q["answers"]:
@@ -259,7 +259,7 @@ def countUser(ev_users,questions_count):
     return count
 
 def addUserToEvent():
-    statusofevs=models.StatusForEvent.query.all();
+    statusofevs=models.StatusForEvent.query.all()
     for i in statusofevs[0].events:
         if i.end.date()==datetime.datetime.now().date() and i.payment.state==True:
             i.status=statusofevs[3]

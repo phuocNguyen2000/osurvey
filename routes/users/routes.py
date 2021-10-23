@@ -32,7 +32,9 @@ import fcm_manager
 from flask_sock import Sock
 from multiprocessing import Process
 import numpy as np
-    
+import csv
+
+from flask import  Response
 
 def token_required(f):
     @wraps(f)
@@ -57,11 +59,34 @@ def token_required(f):
 sock = Sock(app)
 
 
-@app.route('/download')
-def downloadFile ():
-    #For windows you need to use drive name [ex: F:/Example.pdf]
-    path = "030174005711.json"
-    return send_file(path, as_attachment=True)
+@app.route('/download',methods=["POST"])
+def downloadFile():  
+    if request.method== "POST":
+        if 'event_id' in request.get_json():
+            event_id=request.get_json()["event_id"]
+            result = db.session.execute(
+            "SELECT question.content, count(answer.question_id) as `count`"
+            +" FROM "+
+                "event,user_event,answer,question,user"
+            +" WHERE user_event.event_id=event.event_id "
+                +" and event.event_id={}".format(event_id)
+                +" and answer.user_event_id=user_event.user_event_id"
+                +" and question.question_id=answer.question_id"
+                +" and user_event.user_id=user.user_id "+
+            "group by user_event.event_id,answer.question_id")
+    
+            key = ','.join([str(elem) for elem in result.keys()])
+            val = ',\n'.join([str(elem).replace(")", "").replace("(", "") for elem in result])
+            data=key+"\n"+val+"\n"
+                
+            print(data)
+            s=np.fromstring(data, sep=',')
+
+            return Response(
+                data,
+                mimetype="text/csv",
+                headers={"Content-disposition":
+                    "attachment; filename=myplot.csv"}),200
 
 @app.route('/currentUser',methods=["POST"])
 @cross_origin(origin='*')

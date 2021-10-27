@@ -386,9 +386,9 @@ def signup():
                 print(requesJson['device_key'])
                         
                 files = {'image': byteArr}
-                headers={
-                        'api-key': 'WcmSvRQOcQlgftS5INh8DRNxpCPyDZx9'
-                }
+                headers = {
+    'api-key': 'wEGzmFlGFGJZVhRiWmbIp77SFu5uvl7S'
+}
                     
                 response = requests.post(url, files=files, headers=headers)
                 values= response.json()

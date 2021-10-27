@@ -458,7 +458,7 @@ def signup():
                             ntag= models.UserTag(user_id=n_user.user_id,tag_id=5)
                             db.session.add(ntag)
                             db.session.commit()
-                        fcm_manager.sendPush(title="hi",msg="okfefwer",re_token= tokens)
+                        fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
                         return json.dumps({"success ":"account is created !"}),200
                     else:
                         return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),401  

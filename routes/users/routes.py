@@ -394,8 +394,8 @@ def signup():
                 values= response.json()
                
                 
-                print(values["data"])
-                if values["data"]:
+                print(values)
+                if "data" in values:
                     name=values["data"][0]['name'].split()
                     first_name=name[0]
                     print(first_name)

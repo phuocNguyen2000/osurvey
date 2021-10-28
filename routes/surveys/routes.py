@@ -261,6 +261,13 @@ def createEvent(current_user):
               x=round(res["total"]*0.000044,2)
               n_pay=models.Payment(user=current_user,event=n_event,total=res["total"])
               print(x)
+              year=str(datetime.now().year)
+              month=str(datetime.now().month)
+              day=str(datetime.now().day)
+              hour=str(datetime.now().hour)
+              minu=str(datetime.now().minute)
+              second=str(datetime.now().second)
+              print(year+month+day+hour+minu+second)
               data={
                 "intent": "sale",
                 "payer": {
@@ -282,7 +289,7 @@ def createEvent(current_user):
                     },
                     "description": "The payment transaction description.",
                     "custom": "EBAY_EMS_90048630024435",
-                    "invoice_number": str(n_pay.payment_id),
+                    "invoice_number": str(n_pay.payment_id)+year+month+day+hour+minu+second,
                     "payment_options": {
                       "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
                     },

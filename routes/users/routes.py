@@ -373,8 +373,6 @@ def signup():
             data= requesJson['image64']
             tokens=[]
             tokens.append(requesJson['device_key'])
-            fcm_manager.sendPush(title="hi",msg="okfefwer",re_token= tokens)
-            
             if data:
                 
                 im = Image.open(BytesIO(base64.b64decode(data)))

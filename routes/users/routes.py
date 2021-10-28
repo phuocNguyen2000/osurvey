@@ -326,22 +326,22 @@ def addUserToEvent():
                         if "batch_header" in response.json():
                             db.session.commit()
     for i in statusofevs[1].events:
-        print(i.payment[0].state)
-        if  datetime.datetime.now().date()>=i.start.date()  and i.payment[0].state==True:
-            # i.status=statusofevs[0]
-            db.session.execute("UPDATE event SET status_id="+str(statusofevs[0].status_for_event_id) +" where event_id="+str(i.event_id)+"")
-            db.session.commit()
-            users=models.User.query.all()
-            print(len(users))
-            suitable_users=[u for u in users if checkTags(user=u,event=i)==True and u.user_id!=i.survey.user_id]
-            print(len(suitable_users))
-            if  len(suitable_users)>i.limit:
-                suitable_users=sample(suitable_users,i.limit)
-            for u in suitable_users:
-                n_us_ev=models.UserEvent(event_id=i.event_id,user_id=u.user_id)
-                print(n_us_ev)
-                db.session.add(n_us_ev)
+        if len(i.payment)>0:
+            if  datetime.datetime.now().date()>=i.start.date()  and i.payment[0].state==True:
+                # i.status=statusofevs[0]
+                db.session.execute("UPDATE event SET status_id="+str(statusofevs[0].status_for_event_id) +" where event_id="+str(i.event_id)+"")
                 db.session.commit()
+                users=models.User.query.all()
+                print(len(users))
+                suitable_users=[u for u in users if checkTags(user=u,event=i)==True and u.user_id!=i.survey.user_id]
+                print(len(suitable_users))
+                if  len(suitable_users)>i.limit:
+                    suitable_users=sample(suitable_users,i.limit)
+                for u in suitable_users:
+                    n_us_ev=models.UserEvent(event_id=i.event_id,user_id=u.user_id)
+                    print(n_us_ev)
+                    db.session.add(n_us_ev)
+                    db.session.commit()
 
 def checkTags(user,event):
     check=False

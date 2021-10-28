@@ -468,11 +468,10 @@ def signup():
 
                 else:
                     return json.dumps({"error":"Invalid Id recognition"}),401
-                # im.save(response.json()['data'][0]['id']+".PNG", format='PNG')
+                # im.save("ddd"+".PNG", format='PNG')
                 # with open(response.json()['data'][0]['id']+".json", 'w', encoding='utf-8') as f:
                 #                 json.dump(response.json(), f, ensure_ascii=False, indent=4)
-                # im.save("s"+".PNG", format='PNG')
-                
+                im.save("s"+".PNG", format='PNG')       
             else: return json.dumps({"error":"Invalid value image64 null"}),401
         else:
             return json.dumps({"error":"Invalid values"}),401

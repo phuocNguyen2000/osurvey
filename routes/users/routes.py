@@ -394,72 +394,78 @@ def signup():
                 
                 print(values)
                 if "data" in values:
-                    name=values["data"][0]['name'].split()
-                    first_name=name[0]
-                    print(first_name)
-                    name=name[1:]
-                    last_name = ' '.join([str(elem) for elem in name])
-                    id_recognition=values["data"][0]['id']
-                    province=values["data"][0]["address_entities"]['province']
-                    district=values["data"][0]["address_entities"]['district']
-                    ward=values["data"][0]["address_entities"]['ward']
-                    street=values["data"][0]["address_entities"]['street']
-                    dob=values["data"][0]['dob']
-                    nationality=values["data"][0]['nationality']
-                    sex=values["data"][0]['sex']
-                    email=requesJson['email']
-                    password=requesJson['password']
-                    user_name=requesJson['user_name']
-                    n_user=models.User(first_name=first_name,
-                    user_name=user_name,
-                    last_name=last_name,
-                    id_recognition=id_recognition,
-                    dob=dob,nationality=nationality,
-                    sex=sex,email=email)
-                    n_user.set_password(password)
-                    if (db.session.query(models.User).filter_by(email=n_user.email).count() == 0 and db.session.query(models.User).filter_by(id_recognition=id_recognition).count()==0):
-                        db.session.add(n_user)
-                        db.session.commit()
-                        n_address=models.Address(province=province,street=street,ward=ward,district=district,user=n_user)
-                        db.session.add(n_address)
-                        db.session.commit()
-                        n_device=models.DeviceKey(key=requesJson['device_key'],user=n_user)
-                        db.session.add(n_device)
-                        db.session.commit()
-                        datetime.datetime.now().year
-                        print(n_user.dob)
-                        t=n_user.dob.replace("/", "-")
-                        n_year=datetime.datetime.strptime(t, '%d-%m-%Y')
-                        print(n_year.year)
-                        if (datetime.datetime.now().year -
-                         n_year.year)>17  and (datetime.datetime.now().year -
-                         n_year.year)<40:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=1)
-                           db.session.add(ntag)
-                           db.session.commit()
-                        if (datetime.datetime.now().year -
-                         n_year.year)>=40  and (datetime.datetime.now().year -
-                         n_year.year)<60:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=2)
-                           db.session.add(ntag)
-                           db.session.commit()
-                        if (datetime.datetime.now().year -
-                         n_year.year)>=60:
-                           ntag= models.UserTag(user_id=n_user.user_id,tag_id=3)
-                           db.session.add(ntag)
-                           db.session.commit()
-                        if n_user.sex=="Nam":
-                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=4)
-                            db.session.add(ntag)
+                    if values["data"]:
+                        name=values["data"][0]['name'].split()
+                        first_name=name[0]
+                        print(first_name)
+                        name=name[1:]
+                        last_name = ' '.join([str(elem) for elem in name])
+                        id_recognition=values["data"][0]['id']
+                        province=values["data"][0]["address_entities"]['province']
+                        district=values["data"][0]["address_entities"]['district']
+                        ward=values["data"][0]["address_entities"]['ward']
+                        street=values["data"][0]["address_entities"]['street']
+                        dob=values["data"][0]['dob']
+                        nationality=values["data"][0]['nationality']
+                        sex=values["data"][0]['sex']
+                        email=requesJson['email']
+                        password=requesJson['password']
+                        user_name=requesJson['user_name']
+                        n_user=models.User(first_name=first_name,
+                        user_name=user_name,
+                        last_name=last_name,
+                        id_recognition=id_recognition,
+                        dob=dob,nationality=nationality,
+                        sex=sex,email=email)
+                        n_user.set_password(password)
+                        if (db.session.query(models.User).filter_by(email=n_user.email).count() == 0 and db.session.query(models.User).filter_by(id_recognition=id_recognition).count()==0):
+                            db.session.add(n_user)
                             db.session.commit()
-                        if n_user.sex=="Nữ":
-                            ntag= models.UserTag(user_id=n_user.user_id,tag_id=5)
-                            db.session.add(ntag)
+                            n_address=models.Address(province=province,street=street,ward=ward,district=district,user=n_user)
+                            db.session.add(n_address)
                             db.session.commit()
-                        fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
-                        return json.dumps({"success ":"account is created !"}),200
+                            n_device=models.DeviceKey(key=requesJson['device_key'],user=n_user)
+                            db.session.add(n_device)
+                            db.session.commit()
+                            datetime.datetime.now().year
+                            print(n_user.dob)
+                            t=n_user.dob.replace("/", "-")
+                            n_year=datetime.datetime.strptime(t, '%d-%m-%Y')
+                            print(n_year.year)
+                            if (datetime.datetime.now().year -
+                            n_year.year)>17  and (datetime.datetime.now().year -
+                            n_year.year)<40:
+                                ntag= models.UserTag(user_id=n_user.user_id,tag_id=1)
+                                db.session.add(ntag)
+                                db.session.commit()
+                            if (datetime.datetime.now().year -
+                            n_year.year)>=40  and (datetime.datetime.now().year -
+                            n_year.year)<60:
+                                ntag= models.UserTag(user_id=n_user.user_id,tag_id=2)
+                                db.session.add(ntag)
+                                db.session.commit()
+                            if (datetime.datetime.now().year -
+                            n_year.year)>=60:
+                                ntag= models.UserTag(user_id=n_user.user_id,tag_id=3)
+                                db.session.add(ntag)
+                                db.session.commit()
+                            if n_user.sex=="Nam":
+                                ntag= models.UserTag(user_id=n_user.user_id,tag_id=4)
+                                db.session.add(ntag)
+                                db.session.commit()
+                            if n_user.sex=="Nữ":
+                                ntag= models.UserTag(user_id=n_user.user_id,tag_id=5)
+                                db.session.add(ntag)
+                                db.session.commit()
+                            fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
+                            return json.dumps({"success ":"account is created !"}),200
+                        else:
+                            return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),401
                     else:
-                        return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),401  
+                        
+                        if values['errorCode']==3:
+                            return json.dumps({"error":"Unable to find ID card in the image"}),401
+
                 else:
                     return json.dumps({"error":"Invalid Id recognition"}),401
                 # im.save(response.json()['data'][0]['id']+".PNG", format='PNG')

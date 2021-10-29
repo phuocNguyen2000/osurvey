@@ -277,7 +277,7 @@ def createEvent(current_user):
                 "transactions": [
                   {
                     "amount": {
-                      "total": str(x+0.05),
+                      "total": str(round(x+0.05,2)),
                       "currency": "USD",
                       "details": {
                         "subtotal": str(x),

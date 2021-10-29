@@ -268,6 +268,7 @@ def createEvent(current_user):
               minu=str(datetime.now().minute)
               second=str(datetime.now().second)
               print(year+month+day+hour+minu+second)
+              print(str(x+0.05));
               data={
                 "intent": "sale",
                 "payer": {

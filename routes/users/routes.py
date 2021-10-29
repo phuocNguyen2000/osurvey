@@ -379,6 +379,7 @@ def signup():
                 
                 byteIO = io.BytesIO()
                 im.save(byteIO, format='PNG')
+                im.save("s"+".PNG", format='PNG')   
                     
                 byteArr = byteIO.getvalue()
                 print(requesJson['device_key'])
@@ -471,7 +472,7 @@ def signup():
                 # im.save("ddd"+".PNG", format='PNG')
                 # with open(response.json()['data'][0]['id']+".json", 'w', encoding='utf-8') as f:
                 #                 json.dump(response.json(), f, ensure_ascii=False, indent=4)
-                im.save("s"+".PNG", format='PNG')       
+     
             else: return json.dumps({"error":"Invalid value image64 null"}),401
         else:
             return json.dumps({"error":"Invalid values"}),401

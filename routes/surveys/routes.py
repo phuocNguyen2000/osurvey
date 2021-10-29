@@ -334,16 +334,16 @@ def createEvent(current_user):
               for link in response.json()["links"]:
                 if link["method"]=='REDIRECT':
                       s=link['href'].split("token=")[1]
-              checkout_token=s
+                      checkout_token=s
               n_pay.paypal_pay_id=paypal_pay_id
               n_pay.checkout_token=checkout_token
               db.session.add(n_pay)
               db.session.commit()
               return  json.dumps({"pay_token":s}),200
+            else:
+                return  json.dumps({"error":"required id even data"}),401
         else:
-            return  json.dumps({"error":"required id even data"}),401
-    else:
-        return  json.dumps({"error":"required id event data"}),401
+            return  json.dumps({"error":"required id event data"}),401
 
 
 

@@ -119,17 +119,17 @@ def ownSurvey(current_user):
 @token_required
 def ownSurveyLite(current_user):
     if current_user:
-        own_surveys=models.Survey.query.filter_by(user_id=current_user.user_id).all()
-        ows=None
-        if own_surveys:
+        own_surveyslite=models.Survey.query.filter_by(user_id=current_user.user_id).all()
+        owslite=None
+        if own_surveyslite:
           
             
-            ows={"surveys":[{"name":s.name,"id":s.survey_id,"description":s.desc,"questions":[
+            owslite={"surveys":[{"name":s.name,"id":s.survey_id,"description":s.desc,"questions":[
                 {"content":i.content,"options":[{"content":o.content,"type":o.type} for o in i.options]
-            } for i in s.questions]} for s in own_surveys]}
+            } for i in s.questions]} for s in own_surveyslite]}
         else:
-            ows={"surveys":[]}
-    return jsonify(ows)
+            owslite={"surveys":[]}
+    return jsonify(owslite)
 
 @app.route('/doSurvey',methods=["POST"])
 @cross_origin(origin='*')

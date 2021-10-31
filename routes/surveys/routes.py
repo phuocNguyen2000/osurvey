@@ -68,7 +68,6 @@ def createSurvey(current_user):
                           im = Image.open(BytesIO(base64.b64decode(data)))
                           byteIO = io.BytesIO()
                           im.save(byteIO, format='PNG')
-                          im.save("s"+".PNG", format='PNG') 
                           byteArr = byteIO.getvalue()
                 
                 n_survey=models.Survey(name=res["name"],desc=res["description"],user=current_user)

@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet main:app --t 90
+web: gunicorn --worker-class eventlet main:app 

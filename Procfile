@@ -1,1 +1,1 @@
-web: waitress-serve --port=8080 main:app
+web: gunicorn --workers=2 main:app

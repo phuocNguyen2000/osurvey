@@ -6,4 +6,5 @@ class UserEvent(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.event_id'))
     user_id = db.Column(db.Integer, db.ForeignKey('user.user_id'))
     answers=db.relationship("Answer", back_populates="user_event")
+    do=db.Column(db.Boolean,nullable=False,default=False)
     gift=db.relationship("Gift", back_populates="user_event")

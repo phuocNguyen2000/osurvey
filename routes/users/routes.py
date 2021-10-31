@@ -105,8 +105,9 @@ def ownSurvey(current_user):
         own_surveys=models.Survey.query.filter_by(user_id=current_user.user_id).all()
         ows=None
         if own_surveys:
-            print(own_surveys[0].questions)
-            ows={"surveys":[{"name":s.name,"id":s.survey_id,"description":s.desc,"questions":[
+          
+            
+            ows={"surveys":[{"name":s.name,"id":s.survey_id,"base64":str(s.base64),"description":s.desc,"questions":[
                 {"content":i.content,"options":[{"content":o.content,"type":o.type} for o in i.options]
             } for i in s.questions]} for s in own_surveys]}
         else:
@@ -125,7 +126,11 @@ def doSurvey(current_user):
                 if u_e:
                     for q in event["survey"]["questions"]:
                         for a in q["answers"]:
+                            
                             answer= models.Answer(question_id=q["id"],user_event_id=u_e.user_event_id,answer=a["content"])
+                            if a['is_different']==True:
+                                answer.is_different=True
+                            u_e.do=True
                             db.session.add(answer)
                             db.session.commit()
                 else:
@@ -461,21 +466,21 @@ def signup():
                             fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
                             return json.dumps({"success ":"account is created !"}),200
                         else:
-                            return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),401
+                            return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),411
                     else:
                         
                         if values['errorCode']==3:
-                            return json.dumps({"error":"Unable to find ID card in the image"}),401
+                            return json.dumps({"error":"Unable to find ID card in the image"}),411
 
                 else:
-                    return json.dumps({"error":"Invalid Id recognition"}),401
+                    return json.dumps({"error":"Invalid Id recognition"}),411
                 # im.save("ddd"+".PNG", format='PNG')
                 # with open(response.json()['data'][0]['id']+".json", 'w', encoding='utf-8') as f:
                 #                 json.dump(response.json(), f, ensure_ascii=False, indent=4)
      
-            else: return json.dumps({"error":"Invalid value image64 null"}),401
+            else: return json.dumps({"error":"Invalid value image64 null"}),411
         else:
-            return json.dumps({"error":"Invalid values"}),401
+            return json.dumps({"error":"Invalid values"}),411
     
     
 

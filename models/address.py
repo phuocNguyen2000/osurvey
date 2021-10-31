@@ -9,3 +9,4 @@ class Address(db.Model):
     district=db.Column(db.String(64),nullable=False,default="N/A")
     ward=db.Column(db.String(64),nullable=False,default="N/A")
     street=db.Column(db.String(64),nullable=False,default="N/A")
+   

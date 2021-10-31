@@ -1,6 +1,10 @@
+import base64
 from datetime import datetime
 from functools import wraps
+from io import BytesIO
+import io
 from os import name
+from PIL import Image
 from flask.json import jsonify
 from flask_cors.decorator import cross_origin
 import jwt
@@ -35,6 +39,20 @@ def token_required(f):
          return  jsonify({"error":"token is missing?"}),401
     return decorated
 
+def get_access_token():
+    headers={
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                }
+    data={'grant_type': 'client_credentials'}
+    response = requests.post("https://api.sandbox.paypal.com/v1/oauth2/token",
+    auth=('AWclxyD8OVZu-UlkCAOMgFAcep_rbqGL5jhlazEw-HiXqFMpO6P6mOqLyByoC-BnwmkqZMnQlDT0itxE',
+    'ELcrCDJE9TV6gxCRZnS0sWP7116Fa444UnqjBUqMRdzco713VJ9hiI2C67ndfU3GBUz1kUNfLMYOpcvL'), data=data, headers=headers)
+
+    return response.json()["access_token"]
+
+
+
+
 @app.route('/createSurvey', methods=["POST"])
 @cross_origin(origin='*')
 @token_required
@@ -42,9 +60,19 @@ def createSurvey(current_user):
     if request.method=="POST":
         if "name" in request.get_json() and "questions"in request.get_json()  and "description"in request.get_json():
             res=request.get_json()
-            print(res)
             if res["name"]:
+                byteArr=None
+                if res["base64"] !="N/A":
+                      data= res["base64"]
+                      if data:
+                          im = Image.open(BytesIO(base64.b64decode(data)))
+                          byteIO = io.BytesIO()
+                          im.save(byteIO, format='PNG')
+                          im.save("s"+".PNG", format='PNG') 
+                          byteArr = byteIO.getvalue()
+                
                 n_survey=models.Survey(name=res["name"],desc=res["description"],user=current_user)
+                n_survey.base64=res["base64"]
                 db.session.add(n_survey)
                 db.session.commit()
                 questions=res["questions"]
@@ -61,96 +89,12 @@ def createSurvey(current_user):
                         db.session.add(n_option)
                         db.session.commit()           
             else:
-                return json.dumps({"error":"data not found"}),401
+                return json.dumps({"error":"data not found"}),411
             return  json.dumps({"message":"create survey completed"}),200
         else:
-            return json.dumps({"error":"data not found"}),401
+            return json.dumps({"error":"data not found"}),411
 
-def get_access_token():
-    headers={
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                }
-    data={'grant_type': 'client_credentials'}
-    response = requests.post("https://api.sandbox.paypal.com/v1/oauth2/token",
-    auth=('AWclxyD8OVZu-UlkCAOMgFAcep_rbqGL5jhlazEw-HiXqFMpO6P6mOqLyByoC-BnwmkqZMnQlDT0itxE',
-    'ELcrCDJE9TV6gxCRZnS0sWP7116Fa444UnqjBUqMRdzco713VJ9hiI2C67ndfU3GBUz1kUNfLMYOpcvL'), data=data, headers=headers)
 
-    return response.json()["access_token"]
-
-def create_checkout():
-    headers={
-                        'Content-Type': 'application/json',
-                        'Authorization':'Bearer '+ get_access_token()
-                }
-    data={
-  "intent": "sale",
-  "payer": {
-    "payment_method": "paypal"
-  },
-  "transactions": [
-    {
-      "amount": {
-        "total": "30.11",
-        "currency": "USD",
-        "details": {
-          "subtotal": "30.00",
-          "tax": "0.07",
-          "shipping": "0.03",
-          "handling_fee": "1.00",
-          "shipping_discount": "-1.00",
-          "insurance": "0.01"
-        }
-      },
-      "description": "The payment transaction description.",
-      "custom": "EBAY_EMS_90048630024435",
-      "invoice_number": "48787589673",
-      "payment_options": {
-        "allowed_payment_method": "INSTANT_FUNDING_SOURCE"
-      },
-      "soft_descriptor": "ECHI5786786",
-      "item_list": {
-        "items": [
-          {
-            "name": "hat",
-            "description": "Brown hat.",
-            "quantity": "5",
-            "price": "3",
-            "tax": "0.01",
-            "sku": "1",
-            "currency": "USD"
-          },
-          {
-            "name": "handbag",
-            "description": "Black handbag.",
-            "quantity": "1",
-            "price": "15",
-            "tax": "0.02",
-            "sku": "product34",
-            "currency": "USD"
-          }
-        ],
-        "shipping_address": {
-          "recipient_name": "Brian Robinson",
-          "line1": "4th Floor",
-          "line2": "Unit #34",
-          "city": "San Jose",
-          "country_code": "US",
-          "postal_code": "95131",
-          "phone": "011862212345678",
-          "state": "CA"
-        }
-      }
-    }
-  ],
-  "note_to_payer": "Contact us for any questions on your order.",
-  "redirect_urls": {
-    "return_url": "http://localhost/",
-    "cancel_url": "https://example.com/cancel"
-  }
-}
-    response = requests.post("https://api.sandbox.paypal.com/v1/payments/payment",data=json.dumps(data), headers=headers)
-
-    print(response.json())
 
         
 
@@ -184,11 +128,14 @@ def editSurveys(current_user):
                             db.session.commit()
                     return json.dumps({"message":"survey created"}),200
                 else:
-                    return json.dumps({"error":"survey is in event"}),401
+                    return json.dumps({"error":"survey is in event"}),411
             else:
-                return  json.dumps({"error":"required id survey"}),401
+                return  json.dumps({"error":"required id survey"}),411
     else:
         return  json.dumps({"error":"required user"}),401
+
+
+
 
 @app.route('/deleteSurvey', methods=["POST"])
 @cross_origin(origin='*')
@@ -203,9 +150,11 @@ def deleteSurvey(current_user):
                 db.session.delete(survey)
                 return jsonify({"message":"delete complete"},200)
             else:
-                jsonify({"error":"survey is in event"},401)
+                jsonify({"error":"survey is in event"},411)
         else:
-            return  jsonify({"error":"required id survey"},401)
+            return  jsonify({"error":"required id survey"},411)
+
+
 
 
 @app.route('/createEvent', methods=["POST"])
@@ -342,9 +291,9 @@ def createEvent(current_user):
               db.session.commit()
               return  json.dumps({"pay_token":s}),200
             else:
-                return  json.dumps({"error":"required id even data"}),401
+                return  json.dumps({"error":"required id even data"}),411
         else:
-            return  json.dumps({"error":"required id event data"}),401
+            return  json.dumps({"error":"required id event data"}),411
 
 
 

@@ -9,3 +9,4 @@ class Answer(db.Model):
     question_id = db.Column(db.Integer, db.ForeignKey('question.question_id'))
     user_event_id = db.Column(db.Integer, db.ForeignKey('user_event.user_event_id'))
     user_event=db.relationship("UserEvent", back_populates="answers")
+    is_different=db.Column(db.Boolean,nullable=False,default=False)

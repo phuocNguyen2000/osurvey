@@ -117,7 +117,7 @@ def ownSurvey(current_user):
 @app.route('/ownSurveyLite',methods=["POST"])
 @cross_origin(origin='*')
 @token_required
-def ownSurvey(current_user):
+def ownSurveyLite(current_user):
     if current_user:
         own_surveys=models.Survey.query.filter_by(user_id=current_user.user_id).all()
         ows=None

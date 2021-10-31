@@ -1,1 +1,1 @@
-web: gunicorn --worker-class --thread 4 --timeout 60  eventlet main:app
+web: gunicorn --worker-class --thread 4 --t 60  eventlet main:app

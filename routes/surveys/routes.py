@@ -295,7 +295,7 @@ def createEvent(current_user):
               db.session.add(n_pay)
               db.session.commit()
               tokens=[i.key for i in current_user.device_keys]
-              fcm_manager.sendPush(title="Complete !!!",msg="Payment",re_token= tokens)
+              fcm_manager.sendPush(title="Complete !!!",msg="Create Event Complete,Pay now !!!!",re_token= tokens)
               return  json.dumps({"pay_token":s}),200
             else:
                 return  json.dumps({"error":"required id even data"}),411

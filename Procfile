@@ -1,1 +1,1 @@
-web: waitress-serve --call "main:app"
+web: python main.py

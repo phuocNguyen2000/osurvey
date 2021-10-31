@@ -521,8 +521,8 @@ def signin():
                         n_device=models.DeviceKey(key=s['device_key'],user=user)
                         db.session.add(n_device)
                         db.session.commit()
-                        tokens=[i.key for i in user.device_keys]
-                        fcm_manager.sendPush(title="Hello",msg="I am Osurvey ",re_token= tokens)
+                    tokens=[i.key for i in user.device_keys]
+                    fcm_manager.sendPush(title="Hello",msg="I am Osurvey ",re_token= tokens)
                     return jsonify({"token":token})
                 else:
                     return make_response('Could not verify password error',401,{'WWW-Authenticate':'Basic realm="Login required!"'})

@@ -1,1 +1,1 @@
-web: waitress-serve --listen=*:8000 main:app
+web: waitress-serve --call "main:app"

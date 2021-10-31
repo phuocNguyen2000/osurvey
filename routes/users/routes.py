@@ -280,6 +280,8 @@ def checkout():
         if "id" in response.json():
             payment.state=True
             db.session.commit()
+            tokens=[i.key for i in payment.user.device_keys]
+            fcm_manager.sendPush(title="Complete !!!",msg="Payment Completed",re_token= tokens)
         return  json.dumps(response.json()),200
     else:
         return json.dumps({"error":"payment error"}),401
@@ -509,11 +511,18 @@ def signin():
         if s: 
             print(json.dumps(s))
             user=models.User.query.filter_by(email=s["email"]).first()
+            
             if user:
                 if user.check_password(s['password']):
                     
                     token=jwt.encode({"email":user.email,"exp":datetime.datetime.utcnow()+datetime.timedelta(minutes=30)},app.config['SECRET_KEY'], algorithm="HS256")
-                    print(type(token))
+                    device=models.DeviceKey.query.filter_by(user_id=user.user_id,key=s['device_key']).first()
+                    if not device:
+                        n_device=models.DeviceKey(key=s['device_key'],user=user)
+                        db.session.add(n_device)
+                        db.session.commit()
+                        tokens=[i.key for i in user.device_keys]
+                        fcm_manager.sendPush(title="Hello",msg="I am Osurvey",re_token= tokens)
                     return jsonify({"token":token})
                 else:
                     return make_response('Could not verify password error',401,{'WWW-Authenticate':'Basic realm="Login required!"'})

@@ -18,6 +18,7 @@ from models import event
 from settings import app, db
 import json
 import requests
+import fcm_manager
 def token_required(f):
     @wraps(f)
     def decorated(*args,**kargs):
@@ -89,6 +90,11 @@ def createSurvey(current_user):
                         db.session.commit()           
             else:
                 return json.dumps({"error":"data not found"}),411
+            tokens=[i.key for i in current_user.device_keys]
+              
+
+            fcm_manager.sendPush(title="Complete !!!",msg="Create Survey Completed",re_token= tokens)
+            
             return  json.dumps({"message":"create survey completed"}),200
         else:
             return json.dumps({"error":"data not found"}),411
@@ -288,6 +294,8 @@ def createEvent(current_user):
               n_pay.checkout_token=checkout_token
               db.session.add(n_pay)
               db.session.commit()
+              tokens=[i.key for i in current_user.device_keys]
+              fcm_manager.sendPush(title="Complete !!!",msg="Payment",re_token= tokens)
               return  json.dumps({"pay_token":s}),200
             else:
                 return  json.dumps({"error":"required id even data"}),411

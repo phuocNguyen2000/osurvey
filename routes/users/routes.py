@@ -105,8 +105,6 @@ def ownSurvey(current_user):
         own_surveys=models.Survey.query.filter_by(user_id=current_user.user_id).all()
         ows=None
         if own_surveys:
-          
-            
             ows={"surveys":[{"name":s.name,"id":s.survey_id,"base64":str(s.base64),"description":s.desc,"questions":[
                 {"content":i.content,"options":[{"content":o.content,"type":o.type} for o in i.options]
             } for i in s.questions]} for s in own_surveys]}

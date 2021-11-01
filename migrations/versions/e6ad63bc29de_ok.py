@@ -1,8 +1,8 @@
-"""create db
+"""ok
 
-Revision ID: 8bcd74431339
+Revision ID: e6ad63bc29de
 Revises: 
-Create Date: 2021-10-13 10:03:16.603027
+Create Date: 2021-11-01 09:27:45.251683
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '8bcd74431339'
+revision = 'e6ad63bc29de'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,6 +31,7 @@ def upgrade():
     )
     op.create_table('notification',
     sa.Column('notification_id', sa.Integer(), nullable=False),
+    sa.Column('title', sa.String(), nullable=False),
     sa.Column('content', sa.String(), nullable=False),
     sa.PrimaryKeyConstraint('notification_id')
     )
@@ -193,6 +194,7 @@ def upgrade():
     sa.Column('user_event_id', sa.Integer(), nullable=False),
     sa.Column('event_id', sa.Integer(), nullable=True),
     sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('do', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['event_id'], ['event.event_id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
     sa.PrimaryKeyConstraint('user_event_id')
@@ -203,6 +205,7 @@ def upgrade():
     sa.Column('base64', sa.String(), nullable=False),
     sa.Column('question_id', sa.Integer(), nullable=True),
     sa.Column('user_event_id', sa.Integer(), nullable=True),
+    sa.Column('is_different', sa.Boolean(), nullable=False),
     sa.ForeignKeyConstraint(['question_id'], ['question.question_id'], ),
     sa.ForeignKeyConstraint(['user_event_id'], ['user_event.user_event_id'], ),
     sa.PrimaryKeyConstraint('answer_id')

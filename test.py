@@ -92,12 +92,14 @@
 
 # create_checkout()
 
-import datetime
+# import datetime
 
-year=str(datetime.datetime.now().year)
-month=str(datetime.datetime.now().month)
-day=str(datetime.datetime.now().day)
-hour=str(datetime.datetime.now().hour)
-minu=str(datetime.datetime.now().minute)
-second=str(datetime.datetime.now().second)
-print(year+month+day+hour+minu+second)
+# year=str(datetime.datetime.now().year)
+# month=str(datetime.datetime.now().month)
+# day=str(datetime.datetime.now().day)
+# hour=str(datetime.datetime.now().hour)
+# minu=str(datetime.datetime.now().minute)
+# second=str(datetime.datetime.now().second)
+# print(year+month+day+hour+minu+second)
+import fcm_manager
+fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= ['fnZaLKjcSA6B8GshGewNM1:APA91bEwxgS5KYYnueFT-2FjjdK2EYawGkYmHplynQyYUWCyCK15jFvvoNCTj_1lqI1s9cY6R4EF6CTr5_ansgd6D7XtHLNPTn3Ej46otmFSnGJvftoFRrqti45e1ptK4Tuu-J4X08ti'])

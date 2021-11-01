@@ -6,4 +6,4 @@ import secrets
 import json
 
 if __name__ == '__main__':
-    app.run(debug=True,load_dotenv=True)
+    app.run(debug=False,host='https://osurvey-server.herokuapp.com')

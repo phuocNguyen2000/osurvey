@@ -3,11 +3,7 @@ from firebase_admin import messaging
 
 
 from firebase_admin import credentials
-key={
-  "type": "service_account",
-  "project_id": "esurvey-ee4c3",
-  "private_key_id": "fe590e2c41d337bea1c84edab045d2f7a329404c",
-  "private_key": """-----BEGIN PRIVATE KEY-----
+s="""-----BEGIN PRIVATE KEY-----
   MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDNUmkJpLA0JzHY
   KtIFfHbkrc2ljCzrJYGaYzcNbRkE0JvZiGwXVJE2Pi7MJKL7twOZ0t7/CmWaEuiv
   5cVkG3l6oAJJBf/duZrdjmZ91vBJsfZmFDQbuvt46Pn+naZzg5MGz8YOHSOaNWoK
@@ -35,7 +31,12 @@ key={
   4vIg7QQ2mY/48VSZvRRi78NEsEgfWiHak3aOsgxyydlYKwJWlJM3GXS64AcM34Av
   wkpCt+DTKgCS0aPUbVqAoj8=
   -----END PRIVATE KEY-----
-  """,
+  """
+key={
+  "type": "service_account",
+  "project_id": "esurvey-ee4c3",
+  "private_key_id": "fe590e2c41d337bea1c84edab045d2f7a329404c",
+  "private_key":s,
   "client_email": "firebase-adminsdk-styad@esurvey-ee4c3.iam.gserviceaccount.com",
   "client_id": "112825693966029201082",
   "auth_uri": "https://accounts.google.com/o/oauth2/auth",

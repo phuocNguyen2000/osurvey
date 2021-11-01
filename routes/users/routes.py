@@ -363,6 +363,7 @@ def addUserToEvent():
                     db.session.add(n_us_ev)
                     db.session.commit()
 
+
 def checkTags(user,event):
     check=False
     for utag in user.tags:
@@ -509,9 +510,19 @@ def signin():
             user=models.User.query.filter_by(email=s["email"]).first()
             if user:
                 if user.check_password(s['password']):
-                    
+                    print(s['device_key']
+                    )
+                    fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= [s['device_key']])
                     token=jwt.encode({"email":user.email,"exp":datetime.datetime.utcnow()+datetime.timedelta(minutes=30)},app.config['SECRET_KEY'], algorithm="HS256")
                     print(type(token))
+                    key=models.DeviceKey.query.filter_by(user_id=user.user_id,key=s['device_key']).first()
+                    if key==None:
+                        n_key=models.DeviceKey(key=s['device_key'],user=user)
+                        db.session.add(n_key)
+                        db.session.commit()
+                    user=models.User.query.filter_by(email=s["email"]).first()
+                    tokens=[i.key for i in user.device_keys]
+                    fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
                     return jsonify({"token":token})
                 else:
                     return make_response('Could not verify password error',401,{'WWW-Authenticate':'Basic realm="Login required!"'})

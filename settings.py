@@ -41,5 +41,5 @@ USE_L10N = True
 USE_TZ = True
 
 
-logging.basicConfig(level=logging.DEBUG)
-http.client.HTTPConnection.debuglevel=5
+# logging.basicConfig(level=logging.DEBUG)
+# http.client.HTTPConnection.debuglevel=5

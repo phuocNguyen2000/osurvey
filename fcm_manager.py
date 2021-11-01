@@ -8,7 +8,7 @@ s="-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIB
 g=re.sub('/\\n/g', '\n', s)
 print(s)
 print(g)
-
+print("https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-styad%40esurvey-ee4c3.iam.gserviceaccount.com")
 key={
   "type": "service_account",
   "project_id": "esurvey-ee4c3",

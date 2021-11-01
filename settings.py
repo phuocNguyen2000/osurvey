@@ -40,10 +40,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-VNPAY_RETURN_URL = 'http://localhost:8000/payment_return'  # get from config
-VNPAY_PAYMENT_URL = 'http://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get from config
-VNPAY_API_URL = 'http://sandbox.vnpayment.vn/merchant_webapi/merchant.html'
-VNPAY_TMN_CODE = ''  # Website ID in VNPAY System, get from config
-VNPAY_HASH_SECRET_KEY = ''  # Secret key for create checksum,get from config
+
 logging.basicConfig(level=logging.DEBUG)
 http.client.HTTPConnection.debuglevel=5

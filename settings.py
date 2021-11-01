@@ -26,6 +26,9 @@ from routes.users import routes
 from routes.authenticate import routes
 from routes.surveys import routes
 import models
+import logging
+import http.client
+
 
 LANGUAGE_CODE = 'en-us'
 
@@ -42,3 +45,5 @@ VNPAY_PAYMENT_URL = 'http://sandbox.vnpayment.vn/paymentv2/vpcpay.html'  # get f
 VNPAY_API_URL = 'http://sandbox.vnpayment.vn/merchant_webapi/merchant.html'
 VNPAY_TMN_CODE = ''  # Website ID in VNPAY System, get from config
 VNPAY_HASH_SECRET_KEY = ''  # Secret key for create checksum,get from config
+logging.basicConfig(level=logging.DEBUG)
+http.client.HTTPConnection.debuglevel=5

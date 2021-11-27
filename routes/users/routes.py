@@ -65,7 +65,7 @@ def downloadFile():
         if 'event_id' in request.get_json():
             event_id=request.get_json()["event_id"]
             result = db.session.execute(
-            "SELECT question.content, count(answer.question_id) as `count`"
+            "SELECT user.user_name,user.sex,question.content, answer.question_id"
             +" FROM "+
                 "event,user_event,answer,question,user"
             +" WHERE user_event.event_id=event.event_id "
@@ -79,7 +79,7 @@ def downloadFile():
             val = ',\n'.join([str(elem).replace(")", "").replace("(", "") for elem in result])
             data=key+"\n"+val+"\n"
                 
-            print(data)
+           
             s=np.fromstring(data, sep=',')
 
             return Response(
@@ -92,7 +92,7 @@ def downloadFile():
 @cross_origin(origin='*')
 @token_required
 def test(current_user):
-    print(current_user)
+   
     return jsonify({"first_name":current_user.first_name,"last_name":current_user.last_name,"user_name":current_user.user_name})
 
 
@@ -177,7 +177,8 @@ def ownEvent(current_user):
                     [
                         {
                             "paypal_payment_id":p.paypal_pay_id,
-                            "state":p.state
+                            "state":p.state,
+                            "checkout_token":p.checkout_token
                         }
                          for p in e.payment],
                         "time_stame":e.time_stame,
@@ -186,7 +187,7 @@ def ownEvent(current_user):
                     "survey_id":e.survey_id,
                     "name":e.survey.name,
                     "description":e.survey.desc,
-                    "base64":e.survey.base64,
+                    
                     "questions":[
                         {
                             "id":q.question_id,
@@ -205,6 +206,7 @@ def ownEvent(current_user):
                         ]},"tags":[{"id":t.tag_id,"name":t.name} for t in e.tags]} for e in current_user.own_events]}
         else:
             ows={"events":[]}
+       
     return jsonify(ows)
 
 @app.route('/joinEvent',methods=["POST"])
@@ -218,9 +220,13 @@ def joinEvent(current_user):
             ows={"events":[
             {
             "id":e.event_id,
+            'may_get':e.price/e.limit,
+            'give_away':e.give_away,
             "payment":[
                 {
-                    "paypal_payment_id":p.paypal_pay_id,"state":p.state
+                    "paypal_payment_id":p.paypal_pay_id,
+                    "state":p.state,
+                    "checkout_token":p.checkout_token
                 } 
                 for p in e.payment
                 ],
@@ -257,6 +263,7 @@ def joinEvent(current_user):
             ]} for e in current_user.do_surveys]}
         else:
             ows={"events":[]}
+        
     return jsonify(ows)
 
 @app.route('/checkout',methods=["GET"])
@@ -307,15 +314,16 @@ def countUser(ev_users,questions_count):
 def addUserToEvent():
     statusofevs=models.StatusForEvent.query.all()
     for i in statusofevs[0].events:
-        if i.end.date()==datetime.datetime.now().date() and i.payment.state==True:
-            i.status=statusofevs[3]
+        if i.end.date()==datetime.datetime.now().date() and i.payment[0].state==True:
+            db.session.execute("UPDATE event SET status_id="+str(statusofevs[2].status_for_event_id) +" where event_id="+str(i.event_id)+"")
+            db.session.execute("UPDATE survey SET status_id=2" +" where survey_id="+str(i.survey.survey_id)+"")
             db.session.commit()
             ev_users=models.UserEvent.query.filter_by(event_id=i.event_id).all()
             count=countUser(ev_users=ev_users,questions_count=len(i.survey.questions))
             for event_user in ev_users:
                 user=models.User.query.filter_by(user_id=event_user.user_id).first()
                 ans_questions_len=  db.session.query(models.Answer.question_id).group_by(models.Answer.question_id).filter(models.Answer.user_event_id==event_user.user_event_id).all()
-                if len(ans_questions_len)>=len(i.questions)*0.7:
+                if len(ans_questions_len)>=len(i.survey.questions)*0.7:
                     if i.price/count>0:
                         gift=models.Gift(price=i.price/count,user_event=event_user)
                         headers={
@@ -350,16 +358,17 @@ def addUserToEvent():
             if  datetime.datetime.now().date()>=i.start.date()  and i.payment[0].state==True:
                 # i.status=statusofevs[0]
                 db.session.execute("UPDATE event SET status_id="+str(statusofevs[0].status_for_event_id) +" where event_id="+str(i.event_id)+"")
+                db.session.execute("UPDATE survey SET status_id=1" +" where survey_id="+str(i.survey.survey_id)+"")
                 db.session.commit()
                 users=models.User.query.all()
-                print(len(users))
+               
                 suitable_users=[u for u in users if checkTags(user=u,event=i)==True and u.user_id!=i.survey.user_id]
-                print(len(suitable_users))
+               
                 if  len(suitable_users)>i.limit:
                     suitable_users=sample(suitable_users,i.limit)
                 for u in suitable_users:
                     n_us_ev=models.UserEvent(event_id=i.event_id,user_id=u.user_id)
-                    print(n_us_ev)
+                   
                     db.session.add(n_us_ev)
                     db.session.commit()
 
@@ -376,12 +385,11 @@ def checkTags(user,event):
 
 
 import atexit
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=addUserToEvent, trigger="interval", seconds=1)
+scheduler = BackgroundScheduler(timezone="Asia/Kolkata")
+scheduler.add_job(func=addUserToEvent, trigger="interval", seconds=216.000)
 scheduler.start()
 
-# Shut down the scheduler when exiting the app
-atexit.register(lambda: scheduler.shutdown())
+
 		
 @app.route('/signUp',methods=["POST"])
 @cross_origin(origin='*')
@@ -400,26 +408,26 @@ def signup():
                 
                 byteIO = io.BytesIO()
                 im.save(byteIO, format='PNG')
-                im.save("s"+".PNG", format='PNG')   
+                   
                     
                 byteArr = byteIO.getvalue()
-                print(requesJson['device_key'])
+                
                         
                 files = {'image': byteArr}
                 headers = {
-    'api-key': 'wEGzmFlGFGJZVhRiWmbIp77SFu5uvl7S'
-}
-                    
+                        'api-key': 'p9ZIXNTiIt03kJLIB2dICFV3QNb9tiMj'
+                    }
+                                        
                 response = requests.post(url, files=files, headers=headers)
                 values= response.json()
                
                 
-                print(values)
+               
                 if "data" in values:
                     if values["data"]:
                         name=values["data"][0]['name'].split()
                         first_name=name[0]
-                        print(first_name)
+                        
                         name=name[1:]
                         last_name = ' '.join([str(elem) for elem in name])
                         id_recognition=values["data"][0]['id']
@@ -450,10 +458,10 @@ def signup():
                             db.session.add(n_device)
                             db.session.commit()
                             datetime.datetime.now().year
-                            print(n_user.dob)
+                           
                             t=n_user.dob.replace("/", "-")
                             n_year=datetime.datetime.strptime(t, '%d-%m-%Y')
-                            print(n_year.year)
+                            
                             if (datetime.datetime.now().year -
                             n_year.year)>17  and (datetime.datetime.now().year -
                             n_year.year)<40:
@@ -482,21 +490,21 @@ def signup():
                             fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= tokens)
                             return json.dumps({"success ":"account is created !"}),200
                         else:
-                            return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),411
+                            return json.dumps({"error":'Email or Id recognition is alrealy exsits!'}),401
                     else:
                         
                         if values['errorCode']==3:
-                            return json.dumps({"error":"Unable to find ID card in the image"}),411
+                            return json.dumps({"error":"Unable to find ID card in the image"}),401
 
                 else:
-                    return json.dumps({"error":"Invalid Id recognition"}),411
+                    return json.dumps({"error":"Invalid Id recognition"}),401
                 # im.save("ddd"+".PNG", format='PNG')
                 # with open(response.json()['data'][0]['id']+".json", 'w', encoding='utf-8') as f:
                 #                 json.dump(response.json(), f, ensure_ascii=False, indent=4)
      
-            else: return json.dumps({"error":"Invalid value image64 null"}),411
+            else: return json.dumps({"error":"Invalid value image64 null"}),401
         else:
-            return json.dumps({"error":"Invalid values"}),411
+            return json.dumps({"error":"Invalid values"}),401
     
     
 
@@ -506,15 +514,14 @@ def signin():
     if request.method=="POST":
         s=request.get_json()
         if s: 
-            print(json.dumps(s))
+           
             user=models.User.query.filter_by(email=s["email"]).first()
             if user:
                 if user.check_password(s['password']):
-                    print(s['device_key']
-                    )
-                    fcm_manager.sendPush(title="Wellcome to oSurvey",msg="Hello",re_token= [s['device_key']])
+                   
+                   
                     token=jwt.encode({"email":user.email,"exp":datetime.datetime.utcnow()+datetime.timedelta(minutes=30)},app.config['SECRET_KEY'], algorithm="HS256")
-                    print(type(token))
+                   
                     key=models.DeviceKey.query.filter_by(user_id=user.user_id,key=s['device_key']).first()
                     if key==None:
                         n_key=models.DeviceKey(key=s['device_key'],user=user)

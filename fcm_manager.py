@@ -21,7 +21,7 @@ key={
 }
 
 
-cred=credentials.Certificate("")
+cred=credentials.Certificate("./serviceAccountkey.json")
 default_app = firebase_admin.initialize_app(cred)
 
 def sendPush(title,msg,re_token,dataObj=None):

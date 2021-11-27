@@ -22,11 +22,11 @@ def token_required(f):
     @wraps(f)
     def decorated(*args,**kargs):
         token=None
-        print(request.headers)
+       
         if 'X-Authorization' in request.headers:
             token=request.headers['X-Authorization']
             if  token:
-                print("token",token)    
+               
                 try:
                     data=jwt.decode(token,app.config['SECRET_KEY'],algorithms=["HS256"],options={"verify_exp": False})
                     current_user=models.User.query.filter_by(email=data["email"]).first()
@@ -72,6 +72,7 @@ def createSurvey(current_user):
                 
                 n_survey=models.Survey(name=res["name"],desc=res["description"],user=current_user)
                 n_survey.base64=res["base64"]
+                n_survey.status_id=2;
                 db.session.add(n_survey)
                 db.session.commit()
                 questions=res["questions"]
@@ -83,7 +84,7 @@ def createSurvey(current_user):
                     db.session.add(n_question)
                     db.session.commit()
                     for option in question["options"]:
-                        print(option["content"])
+                       
                         n_option=models.Option(content=option["content"],question=n_question)
                         db.session.add(n_option)
                         db.session.commit()           
@@ -121,7 +122,7 @@ def editSurveys(current_user):
                         db.session.add(n_question)
                         db.session.commit()
                         for option in question["options"]:
-                            print(option['content'])
+                           
                             n_option=models.Option(content=option['content'],question=question)
                             db.session.add(n_option)
                             db.session.commit()
@@ -173,6 +174,7 @@ def createEvent(current_user):
               price=res["price"]
               give_away=res["give_away"]
               n_event=models.Event(limit=res["limit"],user=current_user,survey=survey,start=start,end=end,price=price,give_away=give_away)
+              survey.status_id=1;
               db.session.add(n_event)
               db.session.commit()
               tags=[e["id"]  for e in res["tags"] if e["selected"]==True]
@@ -208,15 +210,14 @@ def createEvent(current_user):
                   }
               x=round(res["total"]*0.000044,2)
               n_pay=models.Payment(user=current_user,event=n_event,total=res["total"])
-              print(x)
+             
               year=str(datetime.now().year)
               month=str(datetime.now().month)
               day=str(datetime.now().day)
               hour=str(datetime.now().hour)
               minu=str(datetime.now().minute)
               second=str(datetime.now().second)
-              print(year+month+day+hour+minu+second)
-              print(str(x+0.05));
+             
               data={
                 "intent": "sale",
                 "payer": {
@@ -271,13 +272,13 @@ def createEvent(current_user):
                 ],
                 "note_to_payer": "Contact us for any questions on your order.",
                 "redirect_urls": {
-                  "return_url": "https://osurvey-server.herokuapp.com/checkout",
+                  "return_url": "https://8f40-2001-ee0-5759-ba0-1c77-8696-42a3-48d3.ngrok.io/checkout",
                   "cancel_url": "https://example.com/cancel"
                 }
               }
   
               response = requests.post("https://api.sandbox.paypal.com/v1/payments/payment",data=json.dumps(data), headers=headers)
-              print(response.json())
+             
               paypal_pay_id=response.json()["id"]
               s=None
               for link in response.json()["links"]:
@@ -290,9 +291,9 @@ def createEvent(current_user):
               db.session.commit()
               return  json.dumps({"pay_token":s}),200
             else:
-                return  json.dumps({"error":"required id even data"}),411
+                return  json.dumps({"error":"required id even data"}),401
         else:
-            return  json.dumps({"error":"required id event data"}),411
+            return  json.dumps({"error":"required id event data"}),401
 
 
 

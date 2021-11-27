@@ -1,8 +1,8 @@
 """ok
 
-Revision ID: e6ad63bc29de
+Revision ID: c236299fcc9a
 Revises: 
-Create Date: 2021-11-01 09:27:45.251683
+Create Date: 2021-11-22 10:57:57.264239
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = 'e6ad63bc29de'
+revision = 'c236299fcc9a'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -84,8 +84,7 @@ def upgrade():
     sa.Column('user_id', sa.Integer(), nullable=True),
     sa.Column('key', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user.user_id'], ),
-    sa.PrimaryKeyConstraint('device_id'),
-    sa.UniqueConstraint('key')
+    sa.PrimaryKeyConstraint('device_id')
     )
     op.create_table('send_notification',
     sa.Column('user_id', sa.Integer(), nullable=False),
